@@ -18,6 +18,10 @@
 // Bindet das Skript extract.php für Rohdaten ein und speichere es in $data
 $data = include('extract.php');
 
+echo '<pre>';
+print_r($data);
+echo '</pre>';
+
 // Definiert eine Zuordnung von Koordinaten zu Stadtnamen
 $locationsMap = [
     '46.94,7.44' => 'Bern',
