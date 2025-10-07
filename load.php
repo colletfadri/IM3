@@ -14,25 +14,31 @@
    ============================================================================ */
 
 
-// Transformations-Skript  als 'transform.php' einbinden
-include 'transform.php';
-
-// Dekodiere die JSON-Daten zu einem Array
+// Transformations-Skript als 'transform.php' einbinden
+$dataArray = include 'transform.php';
 
 require_once 'config.php'; // Binde die Datenbankkonfiguration ein
 
 try {
     // Erstellt eine neue PDO-Instanz mit der Konfiguration aus config.php
-
+    $pdo = new PDO($dsn, $username, $password, $options);
 
     // SQL-Query mit Platzhaltern für das Einfügen von Daten
-    $sql = "";
+    $sql = "INSERT INTO bike_stations (id, name, latitude, longitude, free_bikes, empty_slots) VALUES (?, ?, ?, ?, ?, ?)";
+           
 
     // Bereitet die SQL-Anweisung vor
     $stmt = $pdo->prepare($sql);
 
     // Fügt jedes Element im Array in die Datenbank ein
     foreach ($dataArray as $item) {
+       $stmt->execute([
+    $item['name'],
+    $item['latitude'],
+    $item['longitude'],
+    $item['free_bikes'],
+    $item['empty_slots']
+]);
     }
 
     echo "Daten erfolgreich eingefügt.";

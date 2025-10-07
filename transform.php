@@ -24,3 +24,6 @@ foreach ($stations as $station) {
 }
 
 // print_r($transformedData);
+
+// Gib die transformierten Daten als JSON zurück
+return $transformedData;
