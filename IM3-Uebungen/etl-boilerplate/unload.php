@@ -14,6 +14,6 @@
    ============================================================================ */
 
 
-require_once '../config.php'; // Stellen Sie sicher, dass dies auf Ihre tatsächliche Konfigurationsdatei verweist
+require_once 'config.php'; // Stellen Sie sicher, dass dies auf Ihre tatsächliche Konfigurationsdatei verweist
 
-header('Content-Type: application/json'.'; charset=utf-8');
+header('Content-Type: application/json');
