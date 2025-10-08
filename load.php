@@ -24,7 +24,7 @@ try {
     $pdo = new PDO($dsn, $username, $password, $options);
 
     // SQL-Query mit Platzhaltern für das Einfügen von Daten
-    $sql = "INSERT INTO bike_stations (id, name, latitude, longitude, free_bikes, empty_slots) VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO bike_stations (name, latitude, longitude, free_bikes, empty_slots) VALUES (?, ?, ?, ?, ?)";
            
 
     // Bereitet die SQL-Anweisung vor
