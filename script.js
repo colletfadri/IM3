@@ -6,5 +6,5 @@ fetch('https://im3.probablyaproject.ch/unload.php')
     console.log(data);
 })
 .catch(error => {
-    console.error(error);
+    console.error('Error:', error);   
 });

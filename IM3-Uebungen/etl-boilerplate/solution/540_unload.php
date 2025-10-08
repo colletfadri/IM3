@@ -16,4 +16,5 @@ try {
     echo json_encode($results);
 } catch (PDOException $e) {
     echo json_encode(['error' => $e->getMessage()]);
+    exit;
 }
