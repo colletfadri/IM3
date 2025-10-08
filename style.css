@@ -1,5 +1,27 @@
-    body {
-            font-family: Arial, sans-serif;
+   @font-face {
+  font-family: 'HarryP';
+  src: url(fonts/HarryP-Font.ttf);
+}
+
+:root {
+
+    --slitheryn-green: #30613F;
+    --slitheryn-dark-green: #1F462C;
+    --slitheryn-dark-grey: #5D5D5D;
+    --slitheryn-light-grey: #AAAAAA;
+
+    --hufflepuff-yellow: #E9BA4B;
+    --hufflepuff-light-yellow: #EEC869;
+    --hufflepuff-light-brown: #716256;
+    --hufflepuff-dark-brown: #372E29;
+
+}
+
+   body {
+  font-family: 'HarryP', Arial, sans-serif;
+}
+
+   body {
             margin: 20px;
             line-height: 1.6;
         }
