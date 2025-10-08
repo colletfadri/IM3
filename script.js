@@ -12,38 +12,48 @@ fetch('https://im3.probablyaproject.ch/unload.php')
 fetch('unload.php')
   .then(response => response.json())
   .then(rawData => {
-    // 1️⃣ Daten nach created_time gruppieren
-    const grouped = {};
+    // 1️⃣ Group by 1-hour rounded time and sum all free bikes
+    const totalsByHour = {};
 
     rawData.forEach(item => {
-      const time = item.created_time;
+      const date = new Date(item.created_time);
+
+      // Round down to the current hour
+      const roundedHour = date.getHours();
+      const roundedTime = `${String(roundedHour).padStart(2, '0')}:00`;
+
       const freeBikes = Number(item.free_bikes) || 0;
 
-      if (!grouped[time]) {
-        grouped[time] = 0;
+      if (!totalsByHour[roundedTime]) {
+        totalsByHour[roundedTime] = 0;
       }
-      grouped[time] += freeBikes;
+      totalsByHour[roundedTime] += freeBikes;
     });
 
-    // 2️⃣ Labels & Werte extrahieren
-    const labels = Object.keys(grouped)
-      .sort((a, b) => new Date(a) - new Date(b)); // Zeitlich sortieren
+    // 2️⃣ Sort labels by hour
+    const labels = Object.keys(totalsByHour).sort(
+      (a, b) => parseInt(a) - parseInt(b)
+    );
 
-    const values = labels.map(label => grouped[label]);
+    // 3️⃣ Get total bikes for each hour
+    const values = labels.map(label => totalsByHour[label]);
 
-    // 3️⃣ Chart.js-Datenstruktur
+    // 4️⃣ Chart data
     const data = {
       labels: labels,
-      datasets: [{
-        label: 'Gesamtanzahl freier Fahrräder',
-        data: values,
-        borderColor: 'rgb(75, 192, 192)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        tension: 0.3
-      }]
+      datasets: [
+        {
+          label: 'Total Free Bikes (per hour)',
+          data: values,
+          borderColor: 'rgb(75, 192, 192)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          tension: 0.3,
+          fill: true
+        }
+      ]
     };
 
-    // 4️⃣ Chart-Konfiguration
+    // 5️⃣ Chart configuration
     const config = {
       type: 'line',
       data: data,
@@ -53,29 +63,34 @@ fetch('unload.php')
           legend: { position: 'top' },
           title: {
             display: true,
-            text: 'Freie Fahrräder über den Tag (Summe aller Stationen)'
+            text: 'Total Free Bikes per Hour'
           }
         },
         scales: {
           x: {
-            title: { display: true, text: 'Zeit' },
+            title: { display: true, text: 'Time (hourly)' },
             ticks: {
-              callback: function(value, index, ticks) {
-                // Nur Stunde:Minute anzeigen
+              // 🕒 Show only every 2nd label
+              callback: function (value, index, ticks) {
+                // `value` is index, so use labels array
                 const label = this.getLabelForValue(value);
-                return label.slice(11, 16); // z.B. "11:37"
+                const hour = parseInt(label.split(':')[0], 10);
+                return hour % 2 === 0 ? label : ''; // Show every 2 hours
               }
             }
           },
           y: {
             beginAtZero: true,
-            title: { display: true, text: 'Anzahl freier Fahrräder' }
+            title: { display: true, text: 'Total Free Bikes' }
           }
         }
       }
     };
 
-    // 5️⃣ Chart zeichnen
+    // 6️⃣ Render chart
     new Chart(document.getElementById('tägliche_tabelle'), config);
   })
-  .catch(error => console.error('Fehler beim Laden der Daten:', error));
+  .catch(error => console.error('Error loading data:', error));
+
+
+
