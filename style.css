@@ -55,7 +55,7 @@
         
         .right-section {
             flex: 1;
-            background-color: #f5f5f5;
+            background-color: var(--slitheryn-dark-green);
             padding: 20px;
             border-radius: 8px;
             border: 1px solid #ddd;
@@ -128,7 +128,8 @@
         }
 
         .period-button {
-            background-color: #4a90e2;
+            font-family: 'HarryP', Arial, sans-serif;
+            background-color: var(--hufflepuff-yellow);
             color: white;
             border: none;
             padding: 15px 30px;

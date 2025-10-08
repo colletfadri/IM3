@@ -14,6 +14,19 @@
    ============================================================================ */
 
 
-require_once '../config.php'; // Stellen Sie sicher, dass dies auf Ihre tatsächliche Konfigurationsdatei verweist
+require_once 'config.php'; // Stellen Sie sicher, dass dies auf Ihre tatsächliche Konfigurationsdatei verweist
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+
+$sql = 'SELECT * FROM bike_stations';
+
+try {
+    // Erstellt eine neue PDO-Instanz mit der Konfiguration aus config.php
+    $pdo = new PDO($dsn, $username, $password, $options);
+    $stmt = $pdo->prepare($sql);
+      $stmt->execute();
+
+$results = $stmt->fetchAll();
+
+    echo json_encode($results);
+} catch (PDOException $e)
