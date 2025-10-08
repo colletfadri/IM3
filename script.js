@@ -120,4 +120,82 @@ fetch('unload.php')
   })
   .catch(error => console.error('Error loading data:', error));
 
+let map;
+let markers = [];
 
+// Farbskala abhängig von der Anzahl Bikes
+function getColor(freeBikes) {
+  if (freeBikes > 10) return "green";
+  if (freeBikes > 5) return "orange";
+  return "red";
+}
+
+// Karteninitialisierung
+function initMap() {
+  map = L.map('map').setView([46.85065, 9.53145], 13); // Zentrum Chur
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  updateMap("day"); // Default Ansicht
+}
+
+function updateMap(mode) {
+  fetch('unload.php')
+    .then(res => res.json())
+    .then(data => {
+      // Leere alte Marker
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
+
+      // Filter je nach Modus (Tag, Woche, Monat)
+      const now = new Date();
+      const filtered = data.filter(item => {
+        const created = new Date(item.created_time);
+        const diffHours = (now - created) / 1000 / 3600;
+        if (mode === "day") return diffHours < 24;
+        if (mode === "week") return diffHours < 24 * 7;
+        if (mode === "month") return diffHours < 24 * 30;
+        return true;
+      });
+
+      // Gruppiere nach Station
+      const grouped = {};
+      filtered.forEach(station => {
+        const name = station.name;
+        if (!grouped[name]) grouped[name] = { ...station, totalBikes: 0, count: 0 };
+        grouped[name].totalBikes += station.free_bikes;
+        grouped[name].count++;
+      });
+
+      // Durchschnitt berechnen
+      const averages = Object.values(grouped).map(s => ({
+        name: s.name,
+        latitude: s.latitude,
+        longitude: s.longitude,
+        avgBikes: s.totalBikes / s.count
+      }));
+
+      // Top 3 Stationen nach Durchschnitt
+      const top3 = averages.sort((a, b) => b.avgBikes - a.avgBikes).slice(0, 3);
+
+      // Marker hinzufügen
+      top3.forEach((station, index) => {
+        const color = getColor(station.avgBikes);
+        const icon = L.divIcon({
+          html: `<div style="background:${color};border-radius:50%;width:20px;height:20px;border:2px solid white;"></div>`,
+          className: '',
+          iconSize: [20, 20]
+        });
+
+        const marker = L.marker([station.latitude, station.longitude], { icon }).addTo(map);
+        marker.bindPopup(`<b>${station.name}</b><br>Ø ${station.avgBikes.toFixed(1)} Bikes`);
+        markers.push(marker);
+      });
+    })
+    .catch(err => console.error("Fehler beim Laden:", err));
+}
+
+document.addEventListener('DOMContentLoaded', initMap);
