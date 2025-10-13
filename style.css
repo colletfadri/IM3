@@ -341,3 +341,100 @@ body {
   border-color: var(--hufflepuff-yellow);
   box-shadow: 0 0 5px var(--hufflepuff-yellow);
 }
+
+/* Monatliche Tabelle*/
+
+/* Chart layout — appears on the LEFT again */
+.table-section.monthly {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 40px 0;
+  gap: 30px;
+}
+
+/* Monthly chart container */
+.table-section.monthly .table-container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eee;
+  flex: 2;
+}
+
+/* The canvas container */
+.table-section.monthly .table-placeholder {
+  background-color: #fff;
+  border: none;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+/* Button container (on the right side now) */
+.table-section.monthly .button-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 32px;
+}
+
+/* Chart header with title and dropdown */
+.table-section.monthly .chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 5px;
+}
+
+/* Chart title style */
+.table-section.monthly .chart-title {
+  font-family: 'HarryP', Arial, sans-serif;
+  font-size: 1.8em;
+  color: var(--slitheryn-dark-green);
+  margin: 0;
+  text-shadow: 1px 1px 0 var(--slitheryn-light-grey);
+}
+
+/* Dropdown wrapper */
+.table-section.monthly .station-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Dropdown label */
+.table-section.monthly .station-label {
+  font-size: 1em;
+  color: var(--slitheryn-dark-grey);
+  font-weight: 600;
+}
+
+/* Dropdown select styling */
+.table-section.monthly .station-dropdown {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--slitheryn-light-grey);
+  background-color: #ffffff;
+  font-size: 1em;
+  color: var(--slitheryn-dark-green);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.table-section.monthly .station-dropdown:hover {
+  border-color: var(--slitheryn-green);
+  background-color: var(--slitheryn-light-grey);
+}
+
+.table-section.monthly .station-dropdown:focus {
+  outline: none;
+  border-color: var(--hufflepuff-yellow);
+  box-shadow: 0 0 5px var(--hufflepuff-yellow);
+}

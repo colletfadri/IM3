@@ -14,7 +14,7 @@
 
     <h1 class="main-title">Velos a Coira</h1>
 
-    <!-- Karte -->
+<!-- Karte -->
 <div id="map" style="height: 400px; width: 100%; border-radius: 10px; margin-bottom: 20px;"></div>
 
 <!-- Buttons -->
@@ -37,6 +37,7 @@
         </div>
     </div>
 
+     <!-- Erste Tabelle -->
 <div class="table-section daily">
   <div class="table-container">
     <div class="chart-header">
@@ -60,7 +61,7 @@
   </div>
 </div>
 
-    <!-- Zweite Tabelle: Links Button, rechts Tabelle -->
+    <!-- Zweite Tabelle -->
 <div class="table-section weekly reverse">
   <div class="button-container">
     <button class="period-button">Wöchentlich</button>
@@ -79,17 +80,24 @@
   </div>
 </div>
 
-    <!-- Dritte Tabelle: Links Tabelle, rechts Button "Monatlich" -->
-    <div class="table-section">
-        <div class="table-container">
-            <div class="table-placeholder">
-                Hier kommt die monatliche Tabelle
-            </div>
-        </div>
-        <div class="button-container">
-            <button class="period-button">Monatlich</button>
-        </div>
+    <!-- Dritte Tabelle -->
+<div class="table-section monthly">
+  <div class="table-container">
+    <div class="chart-header">
+      <h2 class="chart-title">Monatliche Übersicht</h2>
+      <div class="station-select-wrapper">
+        <label for="stationSelectMonthly" class="station-label">Station:</label>
+        <select id="stationSelectMonthly" class="station-dropdown"></select>
+      </div>
     </div>
+    <div class="table-placeholder">
+      <canvas id="monatliche_tabelle"></canvas>
+    </div>
+  </div>
+  <div class="button-container">
+    <button class="period-button">Monatlich</button>
+  </div>
+</div>
 
     <!-- Informationsfeld am Ende -->
     <div class="info-footer">

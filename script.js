@@ -333,3 +333,122 @@ function updateMap(mode) {
 }
 
 document.addEventListener('DOMContentLoaded', initMap);
+
+// ------------------ monatliche tabelle --------------------
+let monthlyChartInstance = null;
+let monthlyAllData = [];
+
+fetch('unload.php')
+  .then(response => response.json())
+  .then(rawData => {
+    monthlyAllData = rawData;
+
+    // Populate dropdown with station names
+    const stationSelect = document.getElementById('stationSelectMonthly');
+    const uniqueStations = [...new Set(rawData.map(item => item.name))];
+
+    uniqueStations.forEach(station => {
+      const option = document.createElement('option');
+      option.value = station;
+      option.textContent = station;
+      stationSelect.appendChild(option);
+    });
+
+    // Set initial chart with the first station
+    if (uniqueStations.length > 0) {
+      createMonthlyChart(uniqueStations[0]);
+    }
+
+    // Update chart on dropdown change
+    stationSelect.addEventListener('change', (event) => {
+      const selectedStation = event.target.value;
+      createMonthlyChart(selectedStation);
+    });
+  })
+  .catch(error => console.error('Error loading data:', error));
+
+function createMonthlyChart(selectedStation) {
+  // Filter data for the selected station
+  const stationData = monthlyAllData.filter(item => item.name === selectedStation);
+
+  // Group by day (YYYY-MM-DD) and calculate average bikes per day
+  const totalsByDay = {};
+  const countsByDay = {};
+
+  stationData.forEach(item => {
+    const date = new Date(item.created_time);
+    const dayKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
+    const freeBikes = Number(item.free_bikes) || 0;
+
+    if (!totalsByDay[dayKey]) {
+      totalsByDay[dayKey] = 0;
+      countsByDay[dayKey] = 0;
+    }
+
+    totalsByDay[dayKey] += freeBikes;
+    countsByDay[dayKey]++;
+  });
+
+  // Calculate averages
+  const labels = Object.keys(totalsByDay).sort();
+  const averages = labels.map(day => totalsByDay[day] / countsByDay[day]);
+
+  // Destroy old chart instance if it exists
+  if (monthlyChartInstance) {
+    monthlyChartInstance.destroy();
+  }
+
+  // Create chart data
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        label: `Ø freie Fahrräder (${selectedStation})`,
+        data: averages,
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.3,
+        fill: true
+      }
+    ]
+  };
+
+  // Chart configuration
+  const config = {
+    type: 'line',
+    data: data,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        title: {
+          display: true,
+          text: `Durchschnittliche Anzahl freier Fahrräder (${selectedStation}) pro Tag`
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Tag' },
+          ticks: {
+            maxTicksLimit: 10, // prevents overcrowding
+            callback: function (value, index) {
+              const label = this.getLabelForValue(value);
+              // Format YYYY-MM-DD → show only day number
+              return label.slice(8); // "07" from "2025-10-07"
+            }
+          }
+        },
+        y: {
+          beginAtZero: false,
+          suggestedMin: 0,
+          suggestedMax: Math.max(...averages) * 1.2, // give some breathing space
+          title: { display: true, text: 'Ø Freie Fahrräder' }
+        }
+      }
+    }
+  };
+
+  // Render chart
+  const ctx = document.getElementById('monatliche_tabelle').getContext('2d');
+  monthlyChartInstance = new Chart(ctx, config);
+}
