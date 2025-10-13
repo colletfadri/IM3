@@ -171,22 +171,75 @@ body {
         }
 
         /* spezifisch: kleinere, linksbündige Darstellung für die tägliche Tabelle */
-        .table-section.daily {
-            justify-content: flex-start; /* Inhalt an den linken Rand schieben */
-        }
+       /* === Chart section styling === */
 
-        .table-section.daily .table-container {
-            flex: 0 0 auto; /* keine flexible Dehnung */
-            max-width: 800px; /* gewünschte maximale Breite */
-            width: 100%;
-        }
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 5px;
+}
 
-        .table-section.daily .table-placeholder {
-            width: 100%;
-            height: 400px; /* etwas kleiner */
-        }
+.chart-title {
+  font-family: 'HarryP', Arial, sans-serif;
+  font-size: 1.8em;
+  color: var(--slitheryn-dark-green);
+  margin: 0;
+  text-shadow: 1px 1px 0 var(--slitheryn-light-grey);
+}
 
-        .table-section.daily .button-container {
-            align-self: center;
-            margin-left: 24px;
-        }
+.station-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.station-label {
+  font-size: 1em;
+  color: var(--slitheryn-dark-grey);
+  font-weight: 600;
+}
+
+.station-dropdown {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--slitheryn-light-grey);
+  background-color: #ffffff;
+  font-size: 1em;
+  color: var(--slitheryn-dark-green);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.station-dropdown:hover {
+  border-color: var(--slitheryn-green);
+  background-color: var(--slitheryn-light-grey);
+}
+
+.station-dropdown:focus {
+  outline: none;
+  border-color: var(--hufflepuff-yellow);
+  box-shadow: 0 0 5px var(--hufflepuff-yellow);
+}
+
+/* Optional: style the chart container a bit nicer */
+.table-section.daily .table-container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eee;
+}
+
+.table-section.daily .table-placeholder {
+  background-color: #fff;
+  border: none;
+  height: 420px;
+}
+
+/* Keep button spacing consistent */
+.table-section.daily .button-container {
+  margin-left: 32px;
+}
