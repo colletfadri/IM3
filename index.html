@@ -35,19 +35,28 @@
         </div>
     </div>
 
-    <!-- Erste Tabelle: Links Tabelle, rechts Button "Täglich" -->
-    <div class="table-section daily">
-        <div class="table-container">
-            <div class="table-placeholder">
-                <!-- canvas für die tägliche Tabelle -->
-                <canvas id="tägliche_tabelle"></canvas>
-            </div>
-        </div>
-        <div class="button-container">
-            <button class="period-button">Täglich</button>
-        </div>
+<div class="table-section daily">
+  <div class="table-container">
+    <div class="chart-header">
+      <h2 class="chart-title">Verfügbare Velos</h2>
+
+      <div class="station-select-wrapper">
+        <label for="stationSelect" class="station-label">Station:</label>
+        <select id="stationSelect" class="station-dropdown">
+          <option value="">Alle Stationen</option>
+        </select>
+      </div>
     </div>
-    <script src="script.js"></script>
+
+    <div class="table-placeholder">
+      <canvas id="tägliche_tabelle"></canvas>
+    </div>
+  </div>
+
+  <div class="button-container">
+    <button class="period-button">Täglich</button>
+  </div>
+</div>
 
     <!-- Zweite Tabelle: Links Button, rechts Tabelle -->
     <div class="table-section">
@@ -85,6 +94,8 @@
 
     <script src="script.js" defer></script>
     <script src="map.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
     
 </body>
 </html>
