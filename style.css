@@ -43,6 +43,12 @@ body {
             color: var(--hufflepuff-yellow);
 
         }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            }
+
         
         .content-container {
             display: flex;
