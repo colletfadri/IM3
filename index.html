@@ -61,16 +61,23 @@
 </div>
 
     <!-- Zweite Tabelle: Links Button, rechts Tabelle -->
-    <div class="table-section">
-        <div class="button-container">
-            <button class="period-button">Wöchentlich</button>
-        </div>
-        <div class="table-container">
-            <canvas id="weekly-chart"></canvas>
-                <canvas id="weekly-chart">k</canvas>
-            </div>
-            
-        </div>
+<div class="table-section weekly reverse">
+  <div class="button-container">
+    <button class="period-button">Wöchentlich</button>
+  </div>
+  <div class="table-container">
+    <div class="chart-header">
+      <h2 class="chart-title">Wöchentliche Übersicht</h2>
+      <div class="station-select-wrapper">
+        <label for="stationSelectWeekly" class="station-label">Station:</label>
+        <select id="stationSelectWeekly" class="station-dropdown"></select>
+      </div>
+    </div>
+    <div class="table-placeholder">
+      <canvas id="wochentliche_tabelle"></canvas>
+    </div>
+  </div>
+</div>
 
     <!-- Dritte Tabelle: Links Tabelle, rechts Button "Monatlich" -->
     <div class="table-section">

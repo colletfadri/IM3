@@ -1,3 +1,5 @@
+// -------------------- tägliche tabelle --------------------
+
 let chartInstance = null;
 let allData = [];
 
@@ -128,6 +130,129 @@ function renderChart(stationName) {
   if (chartInstance) chartInstance.destroy();
   chartInstance = new Chart(document.getElementById('tägliche_tabelle'), config);
 }
+
+
+// -------------------- wöchentliche tabelle --------------------
+
+let weeklyChart = null;
+let weeklyData = [];
+
+fetch('unload.php')
+  .then(response => response.json())
+  .then(rawData => {
+    weeklyData = rawData;
+
+    // Get all unique station names
+    const stationNames = [...new Set(rawData.map(item => item.name))];
+
+    const select = document.getElementById('stationSelectWeekly');
+    stationNames.forEach(name => {
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      select.appendChild(option);
+    });
+
+    // Initialize chart with all stations
+    updateWeeklyChart("");
+
+    // Update chart when station changes
+    select.addEventListener('change', () => {
+      updateWeeklyChart(select.value);
+    });
+  })
+  .catch(error => console.error('Error loading weekly data:', error));
+
+function updateWeeklyChart(selectedStation) {
+  const filteredData = selectedStation
+    ? weeklyData.filter(item => item.name === selectedStation)
+    : weeklyData;
+
+  const totalsByDay = {};
+  const countsByDay = {};
+
+  // Group by weekday and sum bikes
+  filteredData.forEach(item => {
+    const date = new Date(item.created_time);
+    const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
+    const freeBikes = Number(item.free_bikes) || 0;
+
+    if (!totalsByDay[weekday]) {
+      totalsByDay[weekday] = 0;
+      countsByDay[weekday] = 0;
+    }
+
+    totalsByDay[weekday] += freeBikes;
+    countsByDay[weekday] += 1;
+  });
+
+  // Calculate averages
+  const averageByDay = {};
+  Object.keys(totalsByDay).forEach(day => {
+    averageByDay[day] = totalsByDay[day] / countsByDay[day];
+  });
+
+  const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const labels = dayOrder.filter(day => averageByDay[day] !== undefined);
+  const values = labels.map(day => averageByDay[day].toFixed(1));
+
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        label: selectedStation
+          ? `Ø Bikes @ ${selectedStation}`
+          : "Ø Total Bikes (All Stations)",
+        data: values,
+        borderColor: 'var(--hufflepuff-yellow)',
+        backgroundColor: 'rgba(233, 186, 75, 0.2)',
+        fill: true,
+        tension: 0.35,
+        pointRadius: 5,
+        pointBackgroundColor: 'var(--slitheryn-dark-green)',
+      },
+    ],
+  };
+
+  const config = {
+    type: 'line',
+    data: data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top' },
+        title: {
+          display: true,
+          text: selectedStation
+            ? `Wöchentliche Übersicht – ${selectedStation}`
+            : "Wöchentliche Übersicht – Alle Stationen",
+          font: { size: 16 },
+        },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Wochentage' },
+        },
+        y: {
+          beginAtZero: false,
+          min: Math.min(...values) * 0.8,
+          max: Math.max(...values) * 1.2,
+          title: { display: true, text: 'Ø Freie Fahrräder' },
+        },
+      },
+    },
+  };
+
+  // Destroy previous chart before creating new one
+  if (weeklyChart) {
+    weeklyChart.destroy();
+  }
+
+  weeklyChart = new Chart(document.getElementById('wochentliche_tabelle'), config);
+}
+
+// ------------------- Map Section -------------------
 
 let map;
 let markers = [];
