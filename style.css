@@ -243,3 +243,101 @@ body {
 .table-section.daily .button-container {
   margin-left: 32px;
 }
+
+/* === wöchentliche tabelle === */
+
+/* Flip layout so chart appears on the right */
+.table-section.weekly.reverse {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 40px 0;
+  gap: 30px;
+}
+
+/* Weekly chart container styling */
+.table-section.weekly .table-container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eee;
+  flex: 2;
+}
+
+/* Chart area itself */
+.table-section.weekly .table-placeholder {
+  background-color: #fff;
+  border: none;
+  height: 420px; /* same height as daily chart */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+/* Button container (now on the left) */
+.table-section.weekly.reverse .button-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 32px;
+  margin-left: 0;
+}
+
+/* Chart header with title + dropdown */
+.table-section.weekly .chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 5px;
+}
+
+/* Chart title — styled in Hogwarts aesthetic */
+.table-section.weekly .chart-title {
+  font-family: 'HarryP', Arial, sans-serif;
+  font-size: 1.8em;
+  color: var(--hufflepuff-dark-brown);
+  margin: 0;
+  text-shadow: 1px 1px 0 var(--hufflepuff-light-brown);
+}
+
+/* Dropdown and label layout */
+.table-section.weekly .station-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Dropdown label text */
+.table-section.weekly .station-label {
+  font-size: 1em;
+  color: var(--slitheryn-dark-grey);
+  font-weight: 600;
+}
+
+/* Dropdown select styling */
+.table-section.weekly .station-dropdown {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--slitheryn-light-grey);
+  background-color: #ffffff;
+  font-size: 1em;
+  color: var(--slitheryn-dark-green);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.table-section.weekly .station-dropdown:hover {
+  border-color: var(--slitheryn-green);
+  background-color: var(--slitheryn-light-grey);
+}
+
+.table-section.weekly .station-dropdown:focus {
+  outline: none;
+  border-color: var(--hufflepuff-yellow);
+  box-shadow: 0 0 5px var(--hufflepuff-yellow);
+}
