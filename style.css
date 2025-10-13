@@ -6,7 +6,7 @@
 
 :root {
 
-    --slitheryn-green: #30613F;
+    --slitheryn-green: 26, 71, 42;
     --slitheryn-dark-green: #1F462C;
     --slitheryn-dark-grey: #5D5D5D;
     --slitheryn-light-grey: #AAAAAA;
@@ -18,9 +18,16 @@
 
 }
 
-   body {
+
+body {
   font-family: 'HarryP', Arial, sans-serif;
+  background-image: 
+    url(images/pattern.png); /* your texture or pattern */
+  background-color: rgba(var(--slitheryn-green), 0.5);
+  background-blend-mode: multiply; /* or 'overlay', 'soft-light', etc. */
+  background-size: cover;
 }
+
 
    body {
             margin: 20px;
@@ -30,7 +37,13 @@
         .main-title {
             text-align: center;
             margin-bottom: 30px;
-            font-size: 2.5em;
+            font-size: 5em;
+            text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+            font-weight: 400;
+            color: var(--hufflepuff-yellow);
+
+
+
         }
         
         .content-container {
