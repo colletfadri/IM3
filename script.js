@@ -1,3 +1,89 @@
+// ------------------- Map Section -------------------
+
+let map;
+let markers = [];
+
+// Farbskala abhängig von der Anzahl Bikes
+function getColor(freeBikes) {
+  if (freeBikes > 10) return "#E9BA4B"; // Hufflepuff Yellow
+  if (freeBikes > 5) return "#716256"; // Dark Brown
+  return "#372E29"; // Light Grey
+}
+
+// Karteninitialisierung
+function initMap() {
+  map = L.map('map').setView([46.85065, 9.53145], 13); // Zentrum Chur
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // Standardansicht: Heute
+  updateMap("day");
+}
+
+// Update-Funktion für Karte
+function updateMap(mode) {
+  fetch('unload.php')
+    .then(res => res.json())
+    .then(data => {
+      // Alte Marker entfernen
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
+
+      const now = new Date();
+
+      // Filter nach Zeitraum
+      const filtered = data.filter(item => {
+        const created = new Date(item.created_time);
+        const diffHours = (now - created) / 1000 / 3600;
+        if (mode === "day") return diffHours < 24;
+        if (mode === "week") return diffHours < 24 * 7;
+        if (mode === "month") return diffHours < 24 * 30;
+        return true;
+      });
+
+      // Gruppiere nach Station für Durchschnittswerte
+      const grouped = {};
+      filtered.forEach(station => {
+        const name = station.name;
+        if (!grouped[name]) grouped[name] = { ...station, total: 0, count: 0 };
+        grouped[name].total += station.free_bikes;
+        grouped[name].count++;
+      });
+
+      // Durchschnitt pro Station berechnen
+      const averages = Object.values(grouped).map(s => ({
+        name: s.name,
+        latitude: s.latitude,
+        longitude: s.longitude,
+        avgBikes: s.total / s.count
+      }));
+
+      // Marker für jede Station hinzufügen
+      averages.forEach(station => {
+        const color = getColor(station.avgBikes);
+        const icon = L.divIcon({
+          html: `<div style="background:${color};border-radius:50%;width:18px;height:18px;border:2px solid white;"></div>`,
+          className: '',
+          iconSize: [18, 18]
+        });
+
+        const marker = L.marker([station.latitude, station.longitude], { icon }).addTo(map);
+        marker.bindPopup(`
+          <b>${station.name}</b><br>
+          🚲 Ø ${station.avgBikes.toFixed(1)} verfügbare Velos
+        `);
+        markers.push(marker);
+      });
+    })
+    .catch(err => console.error("Fehler beim Laden der Kartendaten:", err));
+}
+
+// Initialisieren, sobald DOM geladen ist
+document.addEventListener('DOMContentLoaded', initMap);
+
 // -------------------- tägliche tabelle --------------------
 
 let chartInstance = null;
@@ -252,87 +338,7 @@ function updateWeeklyChart(selectedStation) {
   weeklyChart = new Chart(document.getElementById('wochentliche_tabelle'), config);
 }
 
-// ------------------- Map Section -------------------
 
-let map;
-let markers = [];
-
-// Farbskala abhängig von der Anzahl Bikes
-function getColor(freeBikes) {
-  if (freeBikes > 10) return "green";
-  if (freeBikes > 5) return "orange";
-  return "red";
-}
-
-// Karteninitialisierung
-function initMap() {
-  map = L.map('map').setView([46.85065, 9.53145], 13); // Zentrum Chur
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap'
-  }).addTo(map);
-
-  updateMap("day"); // Default Ansicht
-}
-
-function updateMap(mode) {
-  fetch('unload.php')
-    .then(res => res.json())
-    .then(data => {
-      // Leere alte Marker
-      markers.forEach(m => map.removeLayer(m));
-      markers = [];
-
-      // Filter je nach Modus (Tag, Woche, Monat)
-      const now = new Date();
-      const filtered = data.filter(item => {
-        const created = new Date(item.created_time);
-        const diffHours = (now - created) / 1000 / 3600;
-        if (mode === "day") return diffHours < 24;
-        if (mode === "week") return diffHours < 24 * 7;
-        if (mode === "month") return diffHours < 24 * 30;
-        return true;
-      });
-
-      // Gruppiere nach Station
-      const grouped = {};
-      filtered.forEach(station => {
-        const name = station.name;
-        if (!grouped[name]) grouped[name] = { ...station, totalBikes: 0, count: 0 };
-        grouped[name].totalBikes += station.free_bikes;
-        grouped[name].count++;
-      });
-
-      // Durchschnitt berechnen
-      const averages = Object.values(grouped).map(s => ({
-        name: s.name,
-        latitude: s.latitude,
-        longitude: s.longitude,
-        avgBikes: s.totalBikes / s.count
-      }));
-
-      // Top 3 Stationen nach Durchschnitt
-      const top3 = averages.sort((a, b) => b.avgBikes - a.avgBikes).slice(0, 3);
-
-      // Marker hinzufügen
-      top3.forEach((station, index) => {
-        const color = getColor(station.avgBikes);
-        const icon = L.divIcon({
-          html: `<div style="background:${color};border-radius:50%;width:20px;height:20px;border:2px solid white;"></div>`,
-          className: '',
-          iconSize: [20, 20]
-        });
-
-        const marker = L.marker([station.latitude, station.longitude], { icon }).addTo(map);
-        marker.bindPopup(`<b>${station.name}</b><br>Ø ${station.avgBikes.toFixed(1)} Bikes`);
-        markers.push(marker);
-      });
-    })
-    .catch(err => console.error("Fehler beim Laden:", err));
-}
-
-document.addEventListener('DOMContentLoaded', initMap);
 
 // ------------------ monatliche tabelle --------------------
 let monthlyChartInstance = null;
@@ -452,3 +458,4 @@ function createMonthlyChart(selectedStation) {
   const ctx = document.getElementById('monatliche_tabelle').getContext('2d');
   monthlyChartInstance = new Chart(ctx, config);
 }
+
