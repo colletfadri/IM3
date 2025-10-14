@@ -47,6 +47,7 @@ body {
   width: 90%;
   border-radius: 200px;
   z-index: 1;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
 .button-container.floating {
@@ -98,7 +99,6 @@ body {
   text-align: justify;
   margin-bottom: 20px;
 }
-
 
 
 /* Gemeinsamer Stil für alle Buttons */
@@ -188,6 +188,11 @@ body {
 
 
 /* === Tabellen & Charts === */
+
+#tägliche_tabelle {
+  background-color: var(--hufflepuff-light-yellow)
+}
+
 .table-section {
   display: flex;
   align-items: center;
@@ -207,6 +212,9 @@ body {
   max-width: 800px;
   border-radius: 80px;
   background-color: var(--hufflepuff-yellow);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+
+
 }
 
 .table-placeholder {
