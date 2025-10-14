@@ -137,10 +137,8 @@ function renderChart(stationName) {
     const bikes = Number(item.free_bikes) || 0;
 
     if (stationName === 'all') {
-      // Sum for all stations
       totalsByHour[roundedTime] = (totalsByHour[roundedTime] || 0) + bikes;
     } else {
-      // Just single station
       totalsByHour[roundedTime] = bikes;
     }
   });
@@ -154,15 +152,13 @@ function renderChart(stationName) {
   const suggestedMax = Math.ceil(maxValue * 1.1);
   const suggestedMin = 0;
 
-  // 🟡 Hufflepuff Style Dataset
   const data = {
     labels,
     datasets: [
       {
-        label: stationName === 'all' ? 'Alle Stationen' : stationName,
         data: values,
-        borderColor: '#E9BA4B',          // Hufflepuff yellow line
-        backgroundColor: '#e9ba4b7d',    // translucent yellow fill
+        borderColor: '#E9BA4B',
+        backgroundColor: '#e9ba4b7d',
         tension: 0.3,
         fill: true,
         pointRadius: 4,
@@ -171,40 +167,25 @@ function renderChart(stationName) {
     ],
   };
 
-  // ⚙️ Chart Config
   const config = {
     type: 'line',
     data,
     options: {
       responsive: true,
       plugins: {
-        legend: {
-          display: false, // no "undefined" tag
-        },
-        title: {
-          display: true,
-          text:
-            stationName === 'all'
-              ? 'Insgesamt verfügbare Velos'
-              : `Verfügbarkeit der Velos heute (${stationName})`,
-          color: '#E9BA4B', // Title color
-          font: {
-            size: 18,
-            weight: 'bold',
-            family: 'HarryP, Arial, sans-serif'
-          }
-        },
+        legend: { display: false },
+        title: { display: false, text: "" },
       },
       scales: {
         x: {
           title: {
             display: true,
             text: 'Zeit (stündlich)',
-            color: '#E9BA4B', // Axis title
+            color: '#E9BA4B',
             font: { size: 14, weight: 'bold' },
           },
           ticks: {
-            color: '#EEC869', // Tick label color
+            color: '#EEC869',
             font: { size: 12 },
             callback: function (value) {
               const label = this.getLabelForValue(value);
@@ -213,7 +194,7 @@ function renderChart(stationName) {
             },
           },
           grid: {
-            color: 'rgba(233, 186, 75, 0.2)', // Soft grid lines
+            color: 'rgba(233, 186, 75, 0.2)',
             drawBorder: true,
             borderColor: '#E9BA4B',
           },
@@ -228,10 +209,7 @@ function renderChart(stationName) {
             color: '#E9BA4B',
             font: { size: 14, weight: 'bold' },
           },
-          ticks: {
-            color: '#EEC869', // Tick numbers on Y-axis
-            font: { size: 12 },
-          },
+          ticks: { color: '#EEC869', font: { size: 12 } },
           grid: {
             color: 'rgba(233, 186, 75, 0.15)',
             drawBorder: true,
@@ -242,10 +220,10 @@ function renderChart(stationName) {
     },
   };
 
-  // 🔄 Destroy old chart before creating a new one
   if (chartInstance) chartInstance.destroy();
   chartInstance = new Chart(document.getElementById('tägliche_tabelle'), config);
 }
+
 
 
 
@@ -260,18 +238,15 @@ fetch('unload.php')
   .then(rawData => {
     weeklyData = rawData;
 
-    // Get unique station names
     const stationNames = [...new Set(rawData.map(item => item.name))];
     const select = document.getElementById('stationSelectWeekly');
 
-    // Default "All Stations" option
     const defaultOption = document.createElement('option');
     defaultOption.value = "all";
     defaultOption.textContent = "Alle Stationen";
     defaultOption.selected = true;
     select.appendChild(defaultOption);
 
-    // Add individual stations
     stationNames.forEach(name => {
       const option = document.createElement('option');
       option.value = name;
@@ -279,38 +254,30 @@ fetch('unload.php')
       select.appendChild(option);
     });
 
-    // Initialize chart
     renderWeeklyChart("all");
-
-    // Dropdown change event
     select.addEventListener('change', e => renderWeeklyChart(e.target.value));
   })
   .catch(error => console.error('Error loading weekly data:', error));
 
-// 🟣 Render weekly chart
 function renderWeeklyChart(stationName) {
-  let filtered =
-    stationName === "all"
-      ? weeklyData
-      : weeklyData.filter(item => item.name === stationName);
+  let filtered = stationName === "all"
+    ? weeklyData
+    : weeklyData.filter(item => item.name === stationName);
 
-  const dayTotals = {}; // total bikes per weekday
-  const dayCounts = {}; // number of time samples per weekday
+  const dayTotals = {};
+  const dayCounts = {};
 
   if (stationName === "all") {
-    // ✅ Combine all stations by timestamp first
     const groupedByTimestamp = {};
-
     filtered.forEach(item => {
       const ts = item.created_time;
       if (!groupedByTimestamp[ts]) groupedByTimestamp[ts] = 0;
       groupedByTimestamp[ts] += Number(item.free_bikes) || 0;
     });
 
-    // Now group those totals by weekday
     Object.keys(groupedByTimestamp).forEach(ts => {
       const date = new Date(ts);
-      const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+      const weekday = date.toLocaleDateString("de-DE", { weekday: "long" });
       const totalBikes = groupedByTimestamp[ts];
 
       if (!dayTotals[weekday]) {
@@ -322,10 +289,9 @@ function renderWeeklyChart(stationName) {
       dayCounts[weekday] += 1;
     });
   } else {
-    // 🔸 Single station logic (same as before)
     filtered.forEach(item => {
       const date = new Date(item.created_time);
-      const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+      const weekday = date.toLocaleDateString("de-DE", { weekday: "long" });
       const bikes = Number(item.free_bikes) || 0;
 
       if (!dayTotals[weekday]) {
@@ -338,36 +304,27 @@ function renderWeeklyChart(stationName) {
     });
   }
 
-  // Calculate rounded averages
   const averageByDay = {};
   Object.keys(dayTotals).forEach(day => {
     averageByDay[day] = Math.round(dayTotals[day] / dayCounts[day]);
   });
 
-  const dayOrder = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
+  const dayOrder = [
+    "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"
+  ];
   const labels = dayOrder.filter(day => averageByDay[day] !== undefined);
   const values = labels.map(day => averageByDay[day]);
 
   const maxValue = Math.max(...values);
   const suggestedMax = Math.ceil(maxValue * 1.1);
-  const suggestedMin = 0;
 
-  // 🎨 Use same color scheme as daily chart
-  const borderColor =
-    stationName === "all" ? "rgb(75, 192, 192)" : "rgb(255, 159, 64)";
-  const backgroundColor =
-    stationName === "all"
-      ? "rgba(75, 192, 192, 0.2)"
-      : "rgba(255, 159, 64, 0.2)";
+  const borderColor = "#E9BA4B";
+  const backgroundColor = "#e9ba4b7d";
 
   const data = {
     labels,
     datasets: [
       {
-        label:
-          stationName === "all"
-            ? "Gesamt Ø Freie Fahrräder (Alle Stationen)"
-            : `Ø Freie Fahrräder @ ${stationName}`,
         data: values,
         borderColor,
         backgroundColor,
@@ -385,38 +342,48 @@ function renderWeeklyChart(stationName) {
     options: {
       responsive: true,
       plugins: {
-        legend: { position: "top" },
-        title: {
-          display: true,
-          text:
-            stationName === "all"
-              ? "Wöchentlicher Durchschnitt der freien Fahrräder (Gesamt)"
-              : `Wöchentlicher Durchschnitt (${stationName})`,
-        },
+        legend: { display: false },
+        title: { display: false, text: "" },
       },
       scales: {
         x: {
-          title: { display: true, text: "Wochentage" },
-          ticks: { font: { size: 12 } },
+          title: {
+            display: true,
+            text: "Wochentage",
+            color: "#E9BA4B",
+            font: { size: 14, weight: "bold" },
+          },
+          ticks: { color: "#EEC869", font: { size: 12 } },
+          grid: {
+            color: "rgba(233, 186, 75, 0.2)",
+            drawBorder: true,
+            borderColor: "#E9BA4B",
+          },
         },
         y: {
           beginAtZero: true,
-          suggestedMin,
           suggestedMax,
-          title: { display: true, text: "Freie Fahrräder (Ø gerundet)" },
-          grid: { drawBorder: false },
-          ticks: { precision: 0 },
+          title: {
+            display: true,
+            text: "Ø Freie Fahrräder (gerundet)",
+            color: "#E9BA4B",
+            font: { size: 14, weight: "bold" },
+          },
+          ticks: { color: "#EEC869", font: { size: 12 }, precision: 0 },
+          grid: {
+            color: "rgba(233, 186, 75, 0.15)",
+            drawBorder: true,
+            borderColor: "#E9BA4B",
+          },
         },
       },
     },
   };
 
   if (weeklyChart) weeklyChart.destroy();
-  weeklyChart = new Chart(
-    document.getElementById("wochentliche_tabelle"),
-    config
-  );
+  weeklyChart = new Chart(document.getElementById("wochentliche_tabelle"), config);
 }
+
 
 
 // ------------------ monatliche tabelle --------------------
@@ -461,21 +428,25 @@ function renderMonthlyChart(stationName) {
 
   const monthlyAverages = {};
   const groupedByMonth = {};
+  const displayLabels = {}; // isoKey -> "Monat Jahr" (de-DE)
 
-  // --- Group by month ---
+  // --- Group by month with ISO sortable key ---
   filtered.forEach(item => {
     const d = new Date(item.created_time);
-    const monthKey = d.toLocaleDateString("en-US", {
-      month: "long",
-      year: "numeric",
-    });
-    if (!groupedByMonth[monthKey]) groupedByMonth[monthKey] = [];
-    groupedByMonth[monthKey].push(item);
+    const isoMonthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; // e.g. 2025-09
+    if (!groupedByMonth[isoMonthKey]) {
+      groupedByMonth[isoMonthKey] = [];
+      displayLabels[isoMonthKey] = d.toLocaleDateString("de-DE", {
+        month: "long",
+        year: "numeric",
+      }); // e.g. "September 2025"
+    }
+    groupedByMonth[isoMonthKey].push(item);
   });
 
   // --- Process each month ---
-  Object.keys(groupedByMonth).forEach(monthKey => {
-    const monthData = groupedByMonth[monthKey];
+  Object.keys(groupedByMonth).forEach(isoKey => {
+    const monthData = groupedByMonth[isoKey];
 
     if (stationName === "all") {
       // 🟢 Step 1: Group all stations by hour
@@ -505,9 +476,9 @@ function renderMonthlyChart(stationName) {
 
       // 🟢 Step 3: Average all days in month
       const monthAvg =
-        dayAverages.reduce((sum, val) => sum + val, 0) / dayAverages.length;
+        dayAverages.reduce((sum, val) => sum + val, 0) / (dayAverages.length || 1);
 
-      monthlyAverages[monthKey] = Math.round(monthAvg);
+      monthlyAverages[isoKey] = Math.round(monthAvg);
     } else {
       // 🟠 Individual stations — normal daily average
       const totalsByDay = {};
@@ -528,25 +499,21 @@ function renderMonthlyChart(stationName) {
         dayCount++;
       });
 
-      monthlyAverages[monthKey] = Math.round(monthTotal / dayCount);
+      monthlyAverages[isoKey] = Math.round(monthTotal / (dayCount || 1));
     }
   });
 
-  // --- Build chart ---
-  const labels = Object.keys(monthlyAverages).sort(
-    (a, b) => new Date(a) - new Date(b)
-  );
-  const values = labels.map(l => monthlyAverages[l]);
+  // --- Build chart with sorted ISO keys ---
+  const sortedKeys = Object.keys(monthlyAverages).sort(); // "2025-09" < "2025-10"
+  const labels = sortedKeys.map(k => displayLabels[k]);   // pretty: "September 2025"
+  const values = sortedKeys.map(k => monthlyAverages[k]);
 
   const maxValue = Math.max(...values);
   const suggestedMax = Math.ceil(maxValue * 1.1);
 
-  const borderColor =
-    stationName === "all" ? "rgb(75, 192, 192)" : "rgb(255, 159, 64)";
-  const backgroundColor =
-    stationName === "all"
-      ? "rgba(75, 192, 192, 0.2)"
-      : "rgba(255, 159, 64, 0.2)";
+  // 🟡 Hufflepuff colors
+  const borderColor = "#E9BA4B";
+  const backgroundColor = "#e9ba4b7d";
 
   const data = {
     labels,
@@ -554,7 +521,7 @@ function renderMonthlyChart(stationName) {
       {
         label:
           stationName === "all"
-            ? "Ø Gesamtzahl freier Fahrräder (Alle Stationen)"
+            ? "Ø Freie Fahrräder (Alle Stationen)"
             : `Ø Freie Fahrräder (${stationName})`,
         data: values,
         borderColor,
@@ -578,27 +545,28 @@ function renderMonthlyChart(stationName) {
     data,
     options: {
       responsive: true,
-      maintainAspectRatio: true, // ✅ allows resizing with window
-      aspectRatio: 2,            // ✅ optional, controls width vs height
+      maintainAspectRatio: true,
+      aspectRatio: 2,
       plugins: {
         legend: { display: false },
-        title: {
-          display: true,
-          text:
-            stationName === "all"
-              ? "Monatlicher Durchschnitt aller freien Fahrräder"
-              : `Monatlicher Durchschnitt (${stationName})`,
-          font: { size: 18, weight: "bold" },
-          color: "#333",
-        },
+        title: { display: false, text: "" },
       },
       layout: { padding: { left: 10, right: 10 } },
       scales: {
         x: {
-          title: { display: true, text: "Monate", color: "#555" },
-          ticks: { font: { size: 13 } },
-          grid: { display: false },
-          offset: data.labels.length === 1, // ✅ centers single month
+          title: {
+            display: true,
+            text: "Monate",
+            color: "#E9BA4B",
+            font: { size: 14, weight: "bold" },
+          },
+          ticks: { color: "#EEC869", font: { size: 12 } },
+          grid: {
+            color: "rgba(233, 186, 75, 0.2)",
+            drawBorder: true,
+            borderColor: "#E9BA4B",
+          },
+          offset: data.labels.length === 1,
         },
         y: {
           beginAtZero: true,
@@ -606,10 +574,15 @@ function renderMonthlyChart(stationName) {
           title: {
             display: true,
             text: "Ø Freie Fahrräder (gerundet)",
-            color: "#555",
+            color: "#E9BA4B",
+            font: { size: 14, weight: "bold" },
           },
-          ticks: { precision: 0, font: { size: 13 }, color: "#555" },
-          grid: { color: "rgba(0,0,0,0.05)" },
+          ticks: { color: "#EEC869", font: { size: 12 }, precision: 0 },
+          grid: {
+            color: "rgba(233, 186, 75, 0.15)",
+            drawBorder: true,
+            borderColor: "#E9BA4B",
+          },
         },
       },
     },
@@ -618,3 +591,4 @@ function renderMonthlyChart(stationName) {
   if (monthlyChart) monthlyChart.destroy();
   monthlyChart = new Chart(ctx, config);
 }
+
