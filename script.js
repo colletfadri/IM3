@@ -118,6 +118,7 @@ fetch('unload.php')
   })
   .catch(error => console.error('Error loading data:', error));
 
+
 // 🟣 Function: Render chart (all stations or one)
 function renderChart(stationName) {
   const today = new Date().toISOString().split('T')[0];
@@ -153,21 +154,15 @@ function renderChart(stationName) {
   const suggestedMax = Math.ceil(maxValue * 1.1);
   const suggestedMin = 0;
 
+  // 🟡 Hufflepuff Style Dataset
   const data = {
     labels,
     datasets: [
       {
-        label:
-          stationName === 'all'
-            ? 'Total verfügbare Velos (Alle Stationen)'
-            : `Verügbare Velos bei ${stationName}`,
+        label: stationName === 'all' ? 'Alle Stationen' : stationName,
         data: values,
-        borderColor:
-          stationName === 'all' ? 'rgb(75, 192, 192)' : 'rgb(255, 159, 64)',
-        backgroundColor:
-          stationName === 'all'
-            ? 'rgba(75, 192, 192, 0.2)'
-            : 'rgba(255, 159, 64, 0.2)',
+        borderColor: '#E9BA4B',          // Hufflepuff yellow line
+        backgroundColor: '#e9ba4b7d',    // translucent yellow fill
         tension: 0.3,
         fill: true,
         pointRadius: 4,
@@ -176,46 +171,82 @@ function renderChart(stationName) {
     ],
   };
 
+  // ⚙️ Chart Config
   const config = {
     type: 'line',
     data,
     options: {
       responsive: true,
       plugins: {
-        legend: { position: 'top' },
+        legend: {
+          display: false, // no "undefined" tag
+        },
         title: {
           display: true,
           text:
             stationName === 'all'
               ? 'Insgesamt verfügbare Velos'
               : `Verfügbarkeit der Velos heute (${stationName})`,
+          color: '#E9BA4B', // Title color
+          font: {
+            size: 18,
+            weight: 'bold',
+            family: 'HarryP, Arial, sans-serif'
+          }
         },
       },
       scales: {
         x: {
-          title: { display: true, text: 'Zeit (stündlich)' },
+          title: {
+            display: true,
+            text: 'Zeit (stündlich)',
+            color: '#E9BA4B', // Axis title
+            font: { size: 14, weight: 'bold' },
+          },
           ticks: {
+            color: '#EEC869', // Tick label color
+            font: { size: 12 },
             callback: function (value) {
               const label = this.getLabelForValue(value);
               const hour = parseInt(label.split(':')[0], 10);
               return hour % 2 === 0 ? label : '';
             },
           },
+          grid: {
+            color: 'rgba(233, 186, 75, 0.2)', // Soft grid lines
+            drawBorder: true,
+            borderColor: '#E9BA4B',
+          },
         },
         y: {
           beginAtZero: false,
           suggestedMin,
           suggestedMax,
-          title: { display: true, text: 'Verfügbare Velos' },
-          grid: { drawBorder: false },
+          title: {
+            display: true,
+            text: 'Verfügbare Velos',
+            color: '#E9BA4B',
+            font: { size: 14, weight: 'bold' },
+          },
+          ticks: {
+            color: '#EEC869', // Tick numbers on Y-axis
+            font: { size: 12 },
+          },
+          grid: {
+            color: 'rgba(233, 186, 75, 0.15)',
+            drawBorder: true,
+            borderColor: '#E9BA4B',
+          },
         },
       },
     },
   };
 
+  // 🔄 Destroy old chart before creating a new one
   if (chartInstance) chartInstance.destroy();
   chartInstance = new Chart(document.getElementById('tägliche_tabelle'), config);
 }
+
 
 
 // -------------------- wöchentliche tabelle --------------------
@@ -313,7 +344,7 @@ function renderWeeklyChart(stationName) {
     averageByDay[day] = Math.round(dayTotals[day] / dayCounts[day]);
   });
 
-  const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const dayOrder = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
   const labels = dayOrder.filter(day => averageByDay[day] !== undefined);
   const values = labels.map(day => averageByDay[day]);
 
