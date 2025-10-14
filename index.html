@@ -8,23 +8,17 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 
 <body>
 
     <h1 class="main-title">Velos a Coira</h1>
 
-<!-- Karte -->
-<div id="map"  style="height: 400px; width: 100%; border-radius: 10px; margin-bottom: 20px;"></div>
+    <!-- Karte -->
+    <div id="map"  style="height: 400px; width: 100%; border-radius: 10px; margin-bottom: 20px;"></div>
 
-<!-- Buttons -->
-<div id="buttons" style="text-align: center; margin-bottom: 20px;">
-  <button onclick="updateMap('day')">Today</button>
-  <button onclick="updateMap('week')">This Week</button>
-  <button onclick="updateMap('month')">This Month</button>
-</div>
-    
+    <!-- Buttons für Zeitraum entfernen -->
+
     <div class="content-container">
         <div class="left-section">
             <h2 class="subtitle">Velos a Coira</h2>
@@ -34,72 +28,61 @@
         </div>
         
         <div class="right-section">
-          <div class="infos-title"></div>
-
+            <div class="info-extra top">155 Velos</div>
+            <div class="info-button main"></div>
+            <div class="info-extra bottom">24 Stationen</div>
         </div>
     </div>
 
-     <!-- Erste Tabelle -->
-<div class="table-section daily">
-  <div class="table-container">
-    <div class="chart-header">
-      <h2 class="chart-title">Verfügbare Velos</h2>
-
-      <div class="station-select-wrapper">
-        <label for="stationSelect" class="station-label">Station:</label>
-        <select id="stationSelect" class="station-dropdown">
-          <option value="">Alle Stationen</option>
-        </select>
+    <!-- Erste Tabelle -->
+    <div class="table-section daily">
+      <div class="table-container">
+        <div class="chart-header">
+          <h2 class="chart-title">Verfügbare Velos</h2>
+          <div class="station-select-wrapper">
+            <label for="stationSelect" class="station-label">Station:</label>
+            <select id="stationSelect" class="station-dropdown">
+              <option value="">Alle Stationen</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-placeholder">
+          <canvas id="tägliche_tabelle"></canvas>
+        </div>
       </div>
     </div>
-
-    <div class="table-placeholder">
-      <canvas id="tägliche_tabelle"></canvas>
-    </div>
-  </div>
-
-  <div class="button-container">
-    <button class="period-button">Täglich</button>
-  </div>
-</div>
 
     <!-- Zweite Tabelle -->
-<div class="table-section weekly reverse">
-  <div class="button-container">
-    <button class="period-button">Wöchentlich</button>
-  </div>
-  <div class="table-container">
-    <div class="chart-header">
-      <h2 class="chart-title">Wöchentliche Übersicht</h2>
-      <div class="station-select-wrapper">
-        <label for="stationSelectWeekly" class="station-label">Station:</label>
-        <select id="stationSelectWeekly" class="station-dropdown"></select>
+    <div class="table-section weekly reverse">
+      <div class="table-container">
+        <div class="chart-header">
+          <h2 class="chart-title">Wöchentliche Übersicht</h2>
+          <div class="station-select-wrapper">
+            <label for="stationSelectWeekly" class="station-label">Station:</label>
+            <select id="stationSelectWeekly" class="station-dropdown"></select>
+          </div>
+        </div>
+        <div class="table-placeholder">
+          <canvas id="wochentliche_tabelle"></canvas>
+        </div>
       </div>
     </div>
-    <div class="table-placeholder">
-      <canvas id="wochentliche_tabelle"></canvas>
-    </div>
-  </div>
-</div>
 
     <!-- Dritte Tabelle -->
-<div class="table-section monthly">
-  <div class="table-container">
-    <div class="chart-header">
-      <h2 class="chart-title">Monatliche Übersicht</h2>
-      <div class="station-select-wrapper">
-        <label for="stationSelectMonthly" class="station-label">Station:</label>
-        <select id="stationSelectMonthly" class="station-dropdown"></select>
+    <div class="table-section monthly">
+      <div class="table-container">
+        <div class="chart-header">
+          <h2 class="chart-title">Monatliche Übersicht</h2>
+          <div class="station-select-wrapper">
+            <label for="stationSelectMonthly" class="station-label">Station:</label>
+            <select id="stationSelectMonthly" class="station-dropdown"></select>
+          </div>
+        </div>
+        <div class="table-placeholder">
+          <canvas id="monatliche_tabelle"></canvas>
+        </div>
       </div>
     </div>
-    <div class="table-placeholder">
-      <canvas id="monatliche_tabelle"></canvas>
-    </div>
-  </div>
-  <div class="button-container">
-    <button class="period-button">Monatlich</button>
-  </div>
-</div>
 
     <!-- Informationsfeld am Ende -->
     <div class="info-footer">
@@ -114,7 +97,6 @@
     <script src="script.js" defer></script>
     <script src="map.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
     
 </body>
 </html>

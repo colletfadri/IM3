@@ -223,22 +223,24 @@ function renderChart(stationName) {
 let weeklyChart = null;
 let weeklyData = [];
 
+// 🟢 Fetch data
 fetch('unload.php')
   .then(response => response.json())
   .then(rawData => {
     weeklyData = rawData;
 
+    // Get unique station names
     const stationNames = [...new Set(rawData.map(item => item.name))];
     const select = document.getElementById('stationSelectWeekly');
 
     // Default "All Stations" option
     const defaultOption = document.createElement('option');
-    defaultOption.value = "";
+    defaultOption.value = "all";
     defaultOption.textContent = "Alle Stationen";
     defaultOption.selected = true;
     select.appendChild(defaultOption);
 
-    // Add all stations
+    // Add individual stations
     stationNames.forEach(name => {
       const option = document.createElement('option');
       option.value = name;
@@ -246,240 +248,342 @@ fetch('unload.php')
       select.appendChild(option);
     });
 
-    // Init chart
-    updateWeeklyChart("");
+    // Initialize chart
+    renderWeeklyChart("all");
 
-    select.addEventListener('change', () => {
-      updateWeeklyChart(select.value);
-    });
+    // Dropdown change event
+    select.addEventListener('change', e => renderWeeklyChart(e.target.value));
   })
   .catch(error => console.error('Error loading weekly data:', error));
 
-function updateWeeklyChart(selectedStation) {
-  const filteredData = selectedStation
-    ? weeklyData.filter(item => item.name === selectedStation)
-    : weeklyData;
+// 🟣 Render weekly chart
+function renderWeeklyChart(stationName) {
+  let filtered =
+    stationName === "all"
+      ? weeklyData
+      : weeklyData.filter(item => item.name === stationName);
 
-  const totalsByDay = {};
-  const countsByDay = {};
+  const dayTotals = {}; // total bikes per weekday
+  const dayCounts = {}; // number of time samples per weekday
 
-  // Group by weekday
-  filteredData.forEach(item => {
-    const date = new Date(item.created_time);
-    const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
-    const freeBikes = Number(item.free_bikes) || 0;
+  if (stationName === "all") {
+    // ✅ Combine all stations by timestamp first
+    const groupedByTimestamp = {};
 
-    if (!totalsByDay[weekday]) {
-      totalsByDay[weekday] = 0;
-      countsByDay[weekday] = 0;
-    }
+    filtered.forEach(item => {
+      const ts = item.created_time;
+      if (!groupedByTimestamp[ts]) groupedByTimestamp[ts] = 0;
+      groupedByTimestamp[ts] += Number(item.free_bikes) || 0;
+    });
 
-    totalsByDay[weekday] += freeBikes;
-    countsByDay[weekday] += 1;
-  });
+    // Now group those totals by weekday
+    Object.keys(groupedByTimestamp).forEach(ts => {
+      const date = new Date(ts);
+      const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+      const totalBikes = groupedByTimestamp[ts];
 
-  // Round averages
+      if (!dayTotals[weekday]) {
+        dayTotals[weekday] = 0;
+        dayCounts[weekday] = 0;
+      }
+
+      dayTotals[weekday] += totalBikes;
+      dayCounts[weekday] += 1;
+    });
+  } else {
+    // 🔸 Single station logic (same as before)
+    filtered.forEach(item => {
+      const date = new Date(item.created_time);
+      const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+      const bikes = Number(item.free_bikes) || 0;
+
+      if (!dayTotals[weekday]) {
+        dayTotals[weekday] = 0;
+        dayCounts[weekday] = 0;
+      }
+
+      dayTotals[weekday] += bikes;
+      dayCounts[weekday] += 1;
+    });
+  }
+
+  // Calculate rounded averages
   const averageByDay = {};
-  Object.keys(totalsByDay).forEach(day => {
-    const avg = totalsByDay[day] / countsByDay[day];
-    averageByDay[day] = Math.round(avg);
+  Object.keys(dayTotals).forEach(day => {
+    averageByDay[day] = Math.round(dayTotals[day] / dayCounts[day]);
   });
 
   const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const labels = dayOrder.filter(day => averageByDay[day] !== undefined);
   const values = labels.map(day => averageByDay[day]);
 
-  const ctx = document.getElementById('wochentliche_tabelle').getContext('2d');
+  const maxValue = Math.max(...values);
+  const suggestedMax = Math.ceil(maxValue * 1.1);
+  const suggestedMin = 0;
+
+  // 🎨 Use same color scheme as daily chart
+  const borderColor =
+    stationName === "all" ? "rgb(75, 192, 192)" : "rgb(255, 159, 64)";
+  const backgroundColor =
+    stationName === "all"
+      ? "rgba(75, 192, 192, 0.2)"
+      : "rgba(255, 159, 64, 0.2)";
 
   const data = {
-    labels: labels,
+    labels,
     datasets: [
       {
-        label: selectedStation
-          ? `Ø Fahrräder @ ${selectedStation}`
-          : "Ø Fahrräder (Alle Stationen)",
+        label:
+          stationName === "all"
+            ? "Gesamt Ø Freie Fahrräder (Alle Stationen)"
+            : `Ø Freie Fahrräder @ ${stationName}`,
         data: values,
-        borderColor: '#716256', // Hufflepuff brown
-        backgroundColor: 'rgba(233, 186, 75, 0.2)', // light golden fill
-        fill: true,
+        borderColor,
+        backgroundColor,
         tension: 0.3,
-        pointRadius: 5,
-        pointBackgroundColor: '#E9BA4B', // Hufflepuff yellow
-        pointBorderColor: '#716256',
-        pointBorderWidth: 2,
+        fill: true,
+        pointRadius: 4,
+        pointHoverRadius: 6,
       },
     ],
   };
 
   const config = {
-    type: 'line',
-    data: data,
+    type: "line",
+    data,
     options: {
       responsive: true,
-      maintainAspectRatio: false,
       plugins: {
-        legend: {
-          position: 'top',
-          labels: {
-            color: '#372E29',
-            font: { size: 14, weight: 'bold' },
-          },
-        },
+        legend: { position: "top" },
         title: {
           display: true,
-          text: selectedStation
-            ? `Wöchentliche Übersicht – ${selectedStation}`
-            : "Wöchentliche Übersicht – Alle Stationen",
-          color: '#372E29',
-          font: { size: 16, weight: 'bold' },
+          text:
+            stationName === "all"
+              ? "Wöchentlicher Durchschnitt der freien Fahrräder (Gesamt)"
+              : `Wöchentlicher Durchschnitt (${stationName})`,
         },
       },
       scales: {
         x: {
-          title: { display: true, text: 'Wochentage', color: '#372E29' },
-          grid: { color: 'rgba(0, 0, 0, 0.05)' },
-          ticks: {
-            color: '#5D5D5D',
-            font: { size: 13 },
-          },
+          title: { display: true, text: "Wochentage" },
+          ticks: { font: { size: 12 } },
         },
         y: {
-          beginAtZero: false,
-          min: Math.min(...values) * 0.9,
-          max: Math.max(...values) * 1.1,
-          title: { display: true, text: 'Freie Fahrräder (gerundet)', color: '#372E29' },
-          ticks: { color: '#5D5D5D', font: { size: 13 }, precision: 0 },
-          grid: { color: 'rgba(0, 0, 0, 0.05)' },
+          beginAtZero: true,
+          suggestedMin,
+          suggestedMax,
+          title: { display: true, text: "Freie Fahrräder (Ø gerundet)" },
+          grid: { drawBorder: false },
+          ticks: { precision: 0 },
         },
       },
     },
   };
 
-  if (weeklyChart) {
-    weeklyChart.destroy();
-  }
-
-  weeklyChart = new Chart(ctx, config);
+  if (weeklyChart) weeklyChart.destroy();
+  weeklyChart = new Chart(
+    document.getElementById("wochentliche_tabelle"),
+    config
+  );
 }
-
 
 
 // ------------------ monatliche tabelle --------------------
-let monthlyChartInstance = null;
-let monthlyAllData = [];
 
-fetch('unload.php')
+let monthlyChart = null;
+let monthlyData = [];
+
+fetch("unload.php")
   .then(response => response.json())
   .then(rawData => {
-    monthlyAllData = rawData;
+    monthlyData = rawData;
 
-    // Populate dropdown with station names
-    const stationSelect = document.getElementById('stationSelectMonthly');
-    const uniqueStations = [...new Set(rawData.map(item => item.name))];
+    const stationNames = [...new Set(rawData.map(i => i.name))];
+    const select = document.getElementById("stationSelectMonthly");
 
-    uniqueStations.forEach(station => {
-      const option = document.createElement('option');
-      option.value = station;
-      option.textContent = station;
-      stationSelect.appendChild(option);
+    // Default "All Stations"
+    const def = document.createElement("option");
+    def.value = "all";
+    def.textContent = "Alle Stationen";
+    def.selected = true;
+    select.appendChild(def);
+
+    // Add stations
+    stationNames.forEach(n => {
+      const o = document.createElement("option");
+      o.value = n;
+      o.textContent = n;
+      select.appendChild(o);
     });
 
-    // Set initial chart with the first station
-    if (uniqueStations.length > 0) {
-      createMonthlyChart(uniqueStations[0]);
-    }
+    renderMonthlyChart("all");
 
-    // Update chart on dropdown change
-    stationSelect.addEventListener('change', (event) => {
-      const selectedStation = event.target.value;
-      createMonthlyChart(selectedStation);
-    });
+    select.addEventListener("change", e => renderMonthlyChart(e.target.value));
   })
-  .catch(error => console.error('Error loading data:', error));
+  .catch(e => console.error("Error loading monthly data:", e));
 
-function createMonthlyChart(selectedStation) {
-  // Filter data for the selected station
-  const stationData = monthlyAllData.filter(item => item.name === selectedStation);
+function renderMonthlyChart(stationName) {
+  const filtered =
+    stationName === "all"
+      ? monthlyData
+      : monthlyData.filter(i => i.name === stationName);
 
-  // Group by day (YYYY-MM-DD) and calculate average bikes per day
-  const totalsByDay = {};
-  const countsByDay = {};
+  const monthlyAverages = {};
+  const groupedByMonth = {};
 
-  stationData.forEach(item => {
-    const date = new Date(item.created_time);
-    const dayKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
-    const freeBikes = Number(item.free_bikes) || 0;
-
-    if (!totalsByDay[dayKey]) {
-      totalsByDay[dayKey] = 0;
-      countsByDay[dayKey] = 0;
-    }
-
-    totalsByDay[dayKey] += freeBikes;
-    countsByDay[dayKey]++;
+  // --- Group by month ---
+  filtered.forEach(item => {
+    const d = new Date(item.created_time);
+    const monthKey = d.toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+    if (!groupedByMonth[monthKey]) groupedByMonth[monthKey] = [];
+    groupedByMonth[monthKey].push(item);
   });
 
-  // Calculate averages
-  const labels = Object.keys(totalsByDay).sort();
-  const averages = labels.map(day => totalsByDay[day] / countsByDay[day]);
+  // --- Process each month ---
+  Object.keys(groupedByMonth).forEach(monthKey => {
+    const monthData = groupedByMonth[monthKey];
 
-  // Destroy old chart instance if it exists
-  if (monthlyChartInstance) {
-    monthlyChartInstance.destroy();
-  }
+    if (stationName === "all") {
+      // 🟢 Step 1: Group all stations by hour
+      const hourlyTotals = {};
+      monthData.forEach(item => {
+        const d = new Date(item.created_time);
+        const dayKey = d.toISOString().split("T")[0];
+        const hour = d.getHours();
+        const hourKey = `${dayKey}-${hour}`;
 
-  // Create chart data
+        if (!hourlyTotals[hourKey]) hourlyTotals[hourKey] = 0;
+        hourlyTotals[hourKey] += Number(item.free_bikes) || 0;
+      });
+
+      // 🟢 Step 2: Average hourly totals per day
+      const dailyAverages = {};
+      const dailyCounts = {};
+      Object.keys(hourlyTotals).forEach(hourKey => {
+        const dayKey = hourKey.split("-")[0];
+        dailyAverages[dayKey] = (dailyAverages[dayKey] || 0) + hourlyTotals[hourKey];
+        dailyCounts[dayKey] = (dailyCounts[dayKey] || 0) + 1;
+      });
+
+      const dayAverages = Object.keys(dailyAverages).map(dayKey => {
+        return dailyAverages[dayKey] / dailyCounts[dayKey];
+      });
+
+      // 🟢 Step 3: Average all days in month
+      const monthAvg =
+        dayAverages.reduce((sum, val) => sum + val, 0) / dayAverages.length;
+
+      monthlyAverages[monthKey] = Math.round(monthAvg);
+    } else {
+      // 🟠 Individual stations — normal daily average
+      const totalsByDay = {};
+      const countsByDay = {};
+
+      monthData.forEach(item => {
+        const d = new Date(item.created_time);
+        const dayKey = d.toISOString().split("T")[0];
+        const bikes = Number(item.free_bikes) || 0;
+        totalsByDay[dayKey] = (totalsByDay[dayKey] || 0) + bikes;
+        countsByDay[dayKey] = (countsByDay[dayKey] || 0) + 1;
+      });
+
+      let monthTotal = 0;
+      let dayCount = 0;
+      Object.keys(totalsByDay).forEach(day => {
+        monthTotal += totalsByDay[day] / countsByDay[day];
+        dayCount++;
+      });
+
+      monthlyAverages[monthKey] = Math.round(monthTotal / dayCount);
+    }
+  });
+
+  // --- Build chart ---
+  const labels = Object.keys(monthlyAverages).sort(
+    (a, b) => new Date(a) - new Date(b)
+  );
+  const values = labels.map(l => monthlyAverages[l]);
+
+  const maxValue = Math.max(...values);
+  const suggestedMax = Math.ceil(maxValue * 1.1);
+
+  const borderColor =
+    stationName === "all" ? "rgb(75, 192, 192)" : "rgb(255, 159, 64)";
+  const backgroundColor =
+    stationName === "all"
+      ? "rgba(75, 192, 192, 0.2)"
+      : "rgba(255, 159, 64, 0.2)";
+
   const data = {
-    labels: labels,
+    labels,
     datasets: [
       {
-        label: `Ø freie Fahrräder (${selectedStation})`,
-        data: averages,
-        borderColor: 'rgb(75, 192, 192)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        tension: 0.3,
-        fill: true
-      }
-    ]
+        label:
+          stationName === "all"
+            ? "Ø Gesamtzahl freier Fahrräder (Alle Stationen)"
+            : `Ø Freie Fahrräder (${stationName})`,
+        data: values,
+        borderColor,
+        backgroundColor,
+        borderWidth: 3,
+        tension: 0.35,
+        fill: true,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: borderColor,
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+      },
+    ],
   };
 
-  // Chart configuration
+  const ctx = document.getElementById("monatliche_tabelle").getContext("2d");
+
   const config = {
-    type: 'line',
-    data: data,
+    type: "line",
+    data,
     options: {
       responsive: true,
+      maintainAspectRatio: true, // ✅ allows resizing with window
+      aspectRatio: 2,            // ✅ optional, controls width vs height
       plugins: {
-        legend: { position: 'top' },
+        legend: { display: false },
         title: {
           display: true,
-          text: `Durchschnittliche Anzahl freier Fahrräder (${selectedStation}) pro Tag`
-        }
+          text:
+            stationName === "all"
+              ? "Monatlicher Durchschnitt aller freien Fahrräder"
+              : `Monatlicher Durchschnitt (${stationName})`,
+          font: { size: 18, weight: "bold" },
+          color: "#333",
+        },
       },
+      layout: { padding: { left: 10, right: 10 } },
       scales: {
         x: {
-          title: { display: true, text: 'Tag' },
-          ticks: {
-            maxTicksLimit: 10, // prevents overcrowding
-            callback: function (value, index) {
-              const label = this.getLabelForValue(value);
-              // Format YYYY-MM-DD → show only day number
-              return label.slice(8); // "07" from "2025-10-07"
-            }
-          }
+          title: { display: true, text: "Monate", color: "#555" },
+          ticks: { font: { size: 13 } },
+          grid: { display: false },
+          offset: data.labels.length === 1, // ✅ centers single month
         },
         y: {
-          beginAtZero: false,
-          suggestedMin: 0,
-          suggestedMax: Math.max(...averages) * 1.2, // give some breathing space
-          title: { display: true, text: 'Ø Freie Fahrräder' }
-        }
-      }
-    }
+          beginAtZero: true,
+          suggestedMax,
+          title: {
+            display: true,
+            text: "Ø Freie Fahrräder (gerundet)",
+            color: "#555",
+          },
+          ticks: { precision: 0, font: { size: 13 }, color: "#555" },
+          grid: { color: "rgba(0,0,0,0.05)" },
+        },
+      },
+    },
   };
 
-  // Render chart
-  const ctx = document.getElementById('monatliche_tabelle').getContext('2d');
-  monthlyChartInstance = new Chart(ctx, config);
+  if (monthlyChart) monthlyChart.destroy();
+  monthlyChart = new Chart(ctx, config);
 }
-

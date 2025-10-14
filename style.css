@@ -61,29 +61,82 @@ body {
   margin-bottom: 20px;
 }
 
-.right-section {
-  flex: 1;
-  background-color: var(--slitheryn-dark-green);
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
 
-.infos-title {
-  font-size: 1.2em;
-  font-weight: bold;
-  text-align: center;
-}
 
-.infos-title {
-  font-size: 1.2em;
-  font-weight: bold;
-  text-align: center;
-  position: relative;
-  display: inline-block;
-  transition: color 0.3s ease;
+
+
+/* Gemeinsamer Stil für alle Buttons */
+.info-button, .info-extra {
+  font-family: 'HarryP', Arial, sans-serif;
+  background-color: var(--hufflepuff-yellow);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.1em;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
   cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
 }
+
+/* Hovereffekt für alle */
+.info-button:hover, .info-extra:hover {
+  background-color: var(--hufflepuff-light-yellow);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Hauptbutton bleibt sichtbar */
+.info-button.main {
+  position: relative;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Textwechsel beim Hover auf Hauptbutton */
+.info-button.main::after {
+  content: "Infos";
+}
+
+.info-button.main:hover::after {
+  content: "Chur";
+  color: var(--hufflepuff-dark-brown);
+}
+
+/* Zusätzliche Buttons oben und unten */
+.info-extra {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.info-extra.top {
+  top: -70px;
+}
+
+.info-extra.bottom {
+  bottom: -70px;
+}
+
+/* Sichtbar beim Hover auf Container */
+.right-section:hover .info-extra {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Container */
+.right-section {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+
 
 /* Ursprünglicher Text */
 .infos-title::after {
@@ -95,6 +148,9 @@ body {
   content: "Chur";
   color: var(--hufflepuff-yellow); /* optional: Farbe ändern beim Hover */
 }
+
+
+
 
 
 /* === Tabellen & Charts === */
