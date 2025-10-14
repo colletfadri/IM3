@@ -33,12 +33,50 @@ body {
   color: var(--hufflepuff-yellow);
 }
 
-#map {
-  height: 400px;
-  width: 100%;
-  border-radius: 10px;
-  margin-bottom: 20px;
+.right-section {
+  position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
 }
+
+#map {
+  height: 450px;
+  width: 90%;
+  border-radius: 200px;
+  z-index: 1;
+}
+
+.button-container.floating {
+  position: absolute;
+  bottom: -25px; /* adjust: negative to slightly overlap map */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px;
+  z-index: 3;
+}
+
+.period-button {
+  font-family: 'HarryP', Arial, sans-serif;
+  background-color: var(--hufflepuff-yellow);
+  color: white;
+  border: none;
+  padding: 12px 26px;
+  font-size: 1.1em;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.period-button:hover {
+  background-color: var(--hufflepuff-light-yellow);
+  transform: translateY(-2px);
+}
+
 
 .content-container {
   display: flex;
@@ -149,8 +187,6 @@ body {
 
 
 
-
-
 /* === Tabellen & Charts === */
 .table-section {
   display: flex;
@@ -166,11 +202,11 @@ body {
 
 .table-container {
   flex: 2;
-  background: #fff;
-  border-radius: 12px;
   padding: 25px 30px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  border: 1px solid #eee;
+  max-width: 800px;
+  border-radius: 80px;
+  background-color: var(--hufflepuff-yellow);
 }
 
 .table-placeholder {
@@ -258,23 +294,32 @@ body {
   box-shadow: 0 0 5px var(--hufflepuff-yellow);
 }
 
-/* === Info-Footer === */
 .info-footer {
-  margin-top: 50px;
+  margin: 50px auto;                  /* zentriert und Abstand nach oben/unten */
   padding: 30px;
-  background-color: #f8f9fa;
+  background-color: var(--hufflepuff-yellow);
   border-radius: 10px;
-  border-left: 5px solid #4a90e2;
+  border-left: none;
+  max-width: 600px;                   /* maximale Breite, kannst anpassen */
+  text-align: center;                 /* Inhalt zentrieren */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* leichter Schatten für Tiefe */
 }
 
 .info-footer h3 {
-  color: #333;
+  color: white;
   margin-bottom: 15px;
   font-size: 1.3em;
 }
 
 .info-footer p {
-  color: #666;
+  color: white;
   line-height: 1.6;
   margin: 0;
 }
+
+.centered-image {
+  text-align: center;       /* Bild horizontal zentrieren */
+  margin-top: 40px;         /* Abstand zum oberen Element */
+}
+
+

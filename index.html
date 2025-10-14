@@ -15,10 +15,17 @@
     <h1 class="main-title">Velos a Coira</h1>
 
     <!-- Karte -->
-    <div id="map"></div>
+ <div class="right-section">
+  <div id="map"></div>
 
-    <!-- Buttons für Zeitraum entfernen -->
+  <div class="button-container floating">
+    <button class="period-button" onclick="updateMap('day')">Tag</button>
+    <button class="period-button" onclick="updateMap('week')">Woche</button>
+    <button class="period-button" onclick="updateMap('month')">Monat</button>
+  </div>
+</div>
 
+  
     <div class="content-container">
         <div class="left-section">
             <h2 class="subtitle">Velos a Coira</h2>
@@ -34,7 +41,7 @@
         </div>
     </div>
 
-    <!-- Erste Tabelle -->
+    <!-- tägliche tabelle -->
     <div class="table-section daily">
       <div class="table-container">
         <div class="chart-header">
@@ -52,7 +59,7 @@
       </div>
     </div>
 
-    <!-- Zweite Tabelle -->
+    <!-- wöchentliche tabelle -->
     <div class="table-section weekly reverse">
       <div class="table-container">
         <div class="chart-header">
@@ -68,7 +75,7 @@
       </div>
     </div>
 
-    <!-- Dritte Tabelle -->
+    <!-- monatliche tabelle -->
     <div class="table-section monthly">
       <div class="table-container">
         <div class="chart-header">
@@ -93,6 +100,12 @@
             Die Verfügbarkeit kann sich schnell ändern, besonders zu Stosszeiten.
         </p>
     </div>
+
+
+<div class="centered-image">
+  <img src="images/Velo.png" alt="Velo">
+</div>
+
 
     <script src="script.js" defer></script>
     <script src="map.js"></script>

@@ -12,7 +12,7 @@ function getColor(freeBikes) {
 
 // Karteninitialisierung
 function initMap() {
-  map = L.map('map').setView([46.85065, 9.53145], 13); // Zentrum Chur
+  map = L.map('map').setView([46.854943, 9.523897], 13.5); // Zentrum Chur
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -159,8 +159,8 @@ function renderChart(stationName) {
       {
         label:
           stationName === 'all'
-            ? 'Total Free Bikes (All Stations)'
-            : `Available Bikes at ${stationName}`,
+            ? 'Total verfügbare Velos (Alle Stationen)'
+            : `Verügbare Velos bei ${stationName}`,
         data: values,
         borderColor:
           stationName === 'all' ? 'rgb(75, 192, 192)' : 'rgb(255, 159, 64)',
@@ -187,13 +187,13 @@ function renderChart(stationName) {
           display: true,
           text:
             stationName === 'all'
-              ? 'Total Free Bikes (Every 2 Hours, Today Only)'
-              : `Bike Availability Today (${stationName})`,
+              ? 'Insgesamt verfügbare Velos'
+              : `Verfügbarkeit der Velos heute (${stationName})`,
         },
       },
       scales: {
         x: {
-          title: { display: true, text: 'Time (hourly)' },
+          title: { display: true, text: 'Zeit (stündlich)' },
           ticks: {
             callback: function (value) {
               const label = this.getLabelForValue(value);
@@ -206,7 +206,7 @@ function renderChart(stationName) {
           beginAtZero: false,
           suggestedMin,
           suggestedMax,
-          title: { display: true, text: 'Available Bikes' },
+          title: { display: true, text: 'Verfügbare Velos' },
           grid: { drawBorder: false },
         },
       },
