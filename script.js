@@ -339,7 +339,6 @@ function updateWeeklyChart(selectedStation) {
 }
 
 
-
 // ------------------ monatliche tabelle --------------------
 let monthlyChartInstance = null;
 let monthlyAllData = [];

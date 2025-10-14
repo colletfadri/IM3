@@ -191,7 +191,6 @@ body {
   font-family: 'HarryP', Arial, sans-serif;
   font-size: 1.8em;
   color: var(--slitheryn-dark-green);
-  margin: 0;
   text-shadow: 1px 1px 0 var(--slitheryn-light-grey);
 }
 
