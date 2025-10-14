@@ -1,184 +1,153 @@
-  
-  @font-face {
+@font-face {
   font-family: 'HarryP';
   src: url(fonts/HarryP-Font.ttf);
 }
 
 :root {
-
-    --slitheryn-green: 26, 71, 42;
-    --slitheryn-dark-green: #1F462C;
-    --slitheryn-dark-grey: #5D5D5D;
-    --slitheryn-light-grey: #AAAAAA;
-
-    --hufflepuff-yellow: #E9BA4B;
-    --hufflepuff-light-yellow: #EEC869;
-    --hufflepuff-light-brown: #716256;
-    --hufflepuff-dark-brown: #372E29;
-
+  --slitheryn-green: 26, 71, 42;
+  --slitheryn-dark-green: #1F462C;
+  --slitheryn-dark-grey: #5D5D5D;
+  --slitheryn-light-grey: #AAAAAA;
+  --hufflepuff-yellow: #E9BA4B;
+  --hufflepuff-light-yellow: #EEC869;
+  --hufflepuff-light-brown: #716256;
+  --hufflepuff-dark-brown: #372E29;
 }
 
-
+/* === Grundlayout === */
 body {
   font-family: 'HarryP', Arial, sans-serif;
-  background-image: 
-    url(images/pattern.png); /* your texture or pattern */
-  background-color: rgba(var(--slitheryn-green), 0.5);
-  background-blend-mode: multiply; /* or 'overlay', 'soft-light', etc. */
+  margin: 20px;
+  line-height: 1.6;
+  background: rgba(var(--slitheryn-green), 0.5) url(images/pattern.png);
+  background-blend-mode: multiply;
   background-size: cover;
 }
 
+.main-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 200px;
+  text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  font-weight: 400;
+  color: var(--hufflepuff-yellow);
+}
 
-   body {
-            margin: 20px;
-            line-height: 1.6;
-        }
-        
-        .main-title {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 200px;
-            text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-            font-weight: 400;
-            color: var(--hufflepuff-yellow);
+#map {
+  height: 400px;
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
 
-        }
+.content-container {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
 
-        #map {
-            height: 400px;
-            width: 100%;
-            }
+.left-section {
+  flex: 3;
+}
 
-        
-        .content-container {
-            display: flex;
-            gap: 30px;
-            align-items: flex-start;
-        }
-        
-        .left-section {
-            flex: 2;
-        }
-        
-        .subtitle {
-            font-size: 1.5em;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        
-        .description {
-            text-align: justify;
-            margin-bottom: 20px;
-        }
-        
-        .right-section {
-            flex: 1;
-            background-color: var(--slitheryn-dark-green);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-        
-        .infos-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            text-align: center;
-        }
-        
-        .placeholder {
-            height: 250px;
-            background-color: #e0e0e0;
-            border: 2px dashed #999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-            border-radius: 50px;
-            padding: 20px;
-        }
+.subtitle {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  color: #333;
+}
 
-        .placeholder .main-title {
-            margin: 0 0 20px 0;
-            font-size: 2.5em;
-            text-align: center;
-        }
+.description {
+  text-align: justify;
+  margin-bottom: 20px;
+}
 
-        .placeholder-content {
-            color: #666;
-            font-size: 1.1em;
-        }
+.right-section {
+  flex: 1;
+  background-color: var(--slitheryn-dark-green);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
 
-        /* Tabellen-Sektionen */
-        .table-section {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-            margin: 40px 0;
-        }
+.infos-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+}
 
-        .table-section.reverse {
-            flex-direction: row-reverse;
-        }
+.infos-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
 
-        .table-container {
-            flex: 2;
-        }
+/* Ursprünglicher Text */
+.infos-title::after {
+  content: "Infos";
+}
 
-        .table-placeholder {
-            width: 100%;
-            height: 150px;
-            background-color: #fafafa;
-            border: 1px solid #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            color: #666;
-            font-size: 1.1em;
-        }
+/* Wenn man hovert, wechselt der Text zu "Chur" */
+.infos-title:hover::after {
+  content: "Chur";
+  color: var(--hufflepuff-yellow); /* optional: Farbe ändern beim Hover */
+}
 
-        .button-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
 
-        .period-button {
-            font-family: 'HarryP', Arial, sans-serif;
-            background-color: var(--hufflepuff-yellow);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.1em;
-            border-radius: 25px;
-            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
-        }
+/* === Tabellen & Charts === */
+.table-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  margin: 40px 0;
+}
 
-        .info-footer {
-            margin-top: 50px;
-            padding: 30px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            border-left: 5px solid #4a90e2;
-        }
+.table-section.reverse {
+  flex-direction: row-reverse;
+}
 
-        .info-footer h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
+.table-container {
+  flex: 2;
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eee;
+}
 
-        .info-footer p {
-            color: #666;
-            line-height: 1.6;
-            margin: 0;
-        }
+.table-placeholder {
+  background: #fff;
+  border: none;
+  height: 420px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-        /* spezifisch: kleinere, linksbündige Darstellung für die tägliche Tabelle */
-       /* === Chart section styling === */
+.button-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
+.period-button {
+  font-family: 'HarryP', Arial, sans-serif;
+  background-color: var(--hufflepuff-yellow);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.1em;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+/* === Chart-Header & Dropdowns === */
 .chart-header {
   display: flex;
   justify-content: space-between;
@@ -192,6 +161,12 @@ body {
   font-size: 1.8em;
   color: var(--slitheryn-dark-green);
   text-shadow: 1px 1px 0 var(--slitheryn-light-grey);
+  margin: 0;
+}
+
+.table-section.weekly .chart-title {
+  color: var(--hufflepuff-dark-brown);
+  text-shadow: 1px 1px 0 var(--hufflepuff-light-brown);
 }
 
 .station-select-wrapper {
@@ -210,11 +185,11 @@ body {
   padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid var(--slitheryn-light-grey);
-  background-color: #ffffff;
+  background-color: #fff;
   font-size: 1em;
   color: var(--slitheryn-dark-green);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: 0.2s ease-in-out;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
@@ -229,217 +204,23 @@ body {
   box-shadow: 0 0 5px var(--hufflepuff-yellow);
 }
 
-/* Optional: style the chart container a bit nicer */
-.table-section.daily .table-container {
-  background: #fff;
-  border-radius: 12px;
-  padding: 25px 30px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  border: 1px solid #eee;
+/* === Info-Footer === */
+.info-footer {
+  margin-top: 50px;
+  padding: 30px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  border-left: 5px solid #4a90e2;
 }
 
-.table-section.daily .table-placeholder {
-  background-color: #fff;
-  border: none;
-  height: 420px;
+.info-footer h3 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 1.3em;
 }
 
-/* Keep button spacing consistent */
-.table-section.daily .button-container {
-  margin-left: 32px;
-}
-
-/* === wöchentliche tabelle === */
-
-/* Flip layout so chart appears on the right */
-.table-section.weekly.reverse {
-  flex-direction: row-reverse;
-  justify-content: flex-end;
-  align-items: center;
-  margin: 40px 0;
-  gap: 30px;
-}
-
-/* Weekly chart container styling */
-.table-section.weekly .table-container {
-  background: #fff;
-  border-radius: 12px;
-  padding: 25px 30px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  border: 1px solid #eee;
-  flex: 2;
-}
-
-/* Chart area itself */
-.table-section.weekly .table-placeholder {
-  background-color: #fff;
-  border: none;
-  height: 420px; /* same height as daily chart */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-}
-
-/* Button container (now on the left) */
-.table-section.weekly.reverse .button-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 32px;
-  margin-left: 0;
-}
-
-/* Chart header with title + dropdown */
-.table-section.weekly .chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  padding: 0 5px;
-}
-
-/* Chart title — styled in Hogwarts aesthetic */
-.table-section.weekly .chart-title {
-  font-family: 'HarryP', Arial, sans-serif;
-  font-size: 1.8em;
-  color: var(--hufflepuff-dark-brown);
+.info-footer p {
+  color: #666;
+  line-height: 1.6;
   margin: 0;
-  text-shadow: 1px 1px 0 var(--hufflepuff-light-brown);
-}
-
-/* Dropdown and label layout */
-.table-section.weekly .station-select-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Dropdown label text */
-.table-section.weekly .station-label {
-  font-size: 1em;
-  color: var(--slitheryn-dark-grey);
-  font-weight: 600;
-}
-
-/* Dropdown select styling */
-.table-section.weekly .station-dropdown {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--slitheryn-light-grey);
-  background-color: #ffffff;
-  font-size: 1em;
-  color: var(--slitheryn-dark-green);
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.table-section.weekly .station-dropdown:hover {
-  border-color: var(--slitheryn-green);
-  background-color: var(--slitheryn-light-grey);
-}
-
-.table-section.weekly .station-dropdown:focus {
-  outline: none;
-  border-color: var(--hufflepuff-yellow);
-  box-shadow: 0 0 5px var(--hufflepuff-yellow);
-}
-
-/* Monatliche Tabelle*/
-
-/* Chart layout — appears on the LEFT again */
-.table-section.monthly {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin: 40px 0;
-  gap: 30px;
-}
-
-/* Monthly chart container */
-.table-section.monthly .table-container {
-  background: #fff;
-  border-radius: 12px;
-  padding: 25px 30px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  border: 1px solid #eee;
-  flex: 2;
-}
-
-/* The canvas container */
-.table-section.monthly .table-placeholder {
-  background-color: #fff;
-  border: none;
-  height: 420px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-}
-
-/* Button container (on the right side now) */
-.table-section.monthly .button-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: 32px;
-}
-
-/* Chart header with title and dropdown */
-.table-section.monthly .chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  padding: 0 5px;
-}
-
-/* Chart title style */
-.table-section.monthly .chart-title {
-  font-family: 'HarryP', Arial, sans-serif;
-  font-size: 1.8em;
-  color: var(--slitheryn-dark-green);
-  margin: 0;
-  text-shadow: 1px 1px 0 var(--slitheryn-light-grey);
-}
-
-/* Dropdown wrapper */
-.table-section.monthly .station-select-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Dropdown label */
-.table-section.monthly .station-label {
-  font-size: 1em;
-  color: var(--slitheryn-dark-grey);
-  font-weight: 600;
-}
-
-/* Dropdown select styling */
-.table-section.monthly .station-dropdown {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--slitheryn-light-grey);
-  background-color: #ffffff;
-  font-size: 1em;
-  color: var(--slitheryn-dark-green);
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.table-section.monthly .station-dropdown:hover {
-  border-color: var(--slitheryn-green);
-  background-color: var(--slitheryn-light-grey);
-}
-
-.table-section.monthly .station-dropdown:focus {
-  outline: none;
-  border-color: var(--hufflepuff-yellow);
-  box-shadow: 0 0 5px var(--hufflepuff-yellow);
 }

@@ -228,10 +228,17 @@ fetch('unload.php')
   .then(rawData => {
     weeklyData = rawData;
 
-    // Get all unique station names
     const stationNames = [...new Set(rawData.map(item => item.name))];
-
     const select = document.getElementById('stationSelectWeekly');
+
+    // Default "All Stations" option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = "";
+    defaultOption.textContent = "Alle Stationen";
+    defaultOption.selected = true;
+    select.appendChild(defaultOption);
+
+    // Add all stations
     stationNames.forEach(name => {
       const option = document.createElement('option');
       option.value = name;
@@ -239,10 +246,9 @@ fetch('unload.php')
       select.appendChild(option);
     });
 
-    // Initialize chart with all stations
+    // Init chart
     updateWeeklyChart("");
 
-    // Update chart when station changes
     select.addEventListener('change', () => {
       updateWeeklyChart(select.value);
     });
@@ -257,7 +263,7 @@ function updateWeeklyChart(selectedStation) {
   const totalsByDay = {};
   const countsByDay = {};
 
-  // Group by weekday and sum bikes
+  // Group by weekday
   filteredData.forEach(item => {
     const date = new Date(item.created_time);
     const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
@@ -272,30 +278,35 @@ function updateWeeklyChart(selectedStation) {
     countsByDay[weekday] += 1;
   });
 
-  // Calculate averages
+  // Round averages
   const averageByDay = {};
   Object.keys(totalsByDay).forEach(day => {
-    averageByDay[day] = totalsByDay[day] / countsByDay[day];
+    const avg = totalsByDay[day] / countsByDay[day];
+    averageByDay[day] = Math.round(avg);
   });
 
   const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const labels = dayOrder.filter(day => averageByDay[day] !== undefined);
-  const values = labels.map(day => averageByDay[day].toFixed(1));
+  const values = labels.map(day => averageByDay[day]);
+
+  const ctx = document.getElementById('wochentliche_tabelle').getContext('2d');
 
   const data = {
     labels: labels,
     datasets: [
       {
         label: selectedStation
-          ? `Ø Bikes @ ${selectedStation}`
-          : "Ø Total Bikes (All Stations)",
+          ? `Ø Fahrräder @ ${selectedStation}`
+          : "Ø Fahrräder (Alle Stationen)",
         data: values,
-        borderColor: 'var(--hufflepuff-yellow)',
-        backgroundColor: 'rgba(233, 186, 75, 0.2)',
+        borderColor: '#716256', // Hufflepuff brown
+        backgroundColor: 'rgba(233, 186, 75, 0.2)', // light golden fill
         fill: true,
-        tension: 0.35,
+        tension: 0.3,
         pointRadius: 5,
-        pointBackgroundColor: 'var(--slitheryn-dark-green)',
+        pointBackgroundColor: '#E9BA4B', // Hufflepuff yellow
+        pointBorderColor: '#716256',
+        pointBorderWidth: 2,
       },
     ],
   };
@@ -307,36 +318,50 @@ function updateWeeklyChart(selectedStation) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'top' },
+        legend: {
+          position: 'top',
+          labels: {
+            color: '#372E29',
+            font: { size: 14, weight: 'bold' },
+          },
+        },
         title: {
           display: true,
           text: selectedStation
             ? `Wöchentliche Übersicht – ${selectedStation}`
             : "Wöchentliche Übersicht – Alle Stationen",
-          font: { size: 16 },
+          color: '#372E29',
+          font: { size: 16, weight: 'bold' },
         },
       },
       scales: {
         x: {
-          title: { display: true, text: 'Wochentage' },
+          title: { display: true, text: 'Wochentage', color: '#372E29' },
+          grid: { color: 'rgba(0, 0, 0, 0.05)' },
+          ticks: {
+            color: '#5D5D5D',
+            font: { size: 13 },
+          },
         },
         y: {
           beginAtZero: false,
-          min: Math.min(...values) * 0.8,
-          max: Math.max(...values) * 1.2,
-          title: { display: true, text: 'Ø Freie Fahrräder' },
+          min: Math.min(...values) * 0.9,
+          max: Math.max(...values) * 1.1,
+          title: { display: true, text: 'Freie Fahrräder (gerundet)', color: '#372E29' },
+          ticks: { color: '#5D5D5D', font: { size: 13 }, precision: 0 },
+          grid: { color: 'rgba(0, 0, 0, 0.05)' },
         },
       },
     },
   };
 
-  // Destroy previous chart before creating new one
   if (weeklyChart) {
     weeklyChart.destroy();
   }
 
-  weeklyChart = new Chart(document.getElementById('wochentliche_tabelle'), config);
+  weeklyChart = new Chart(ctx, config);
 }
+
 
 
 // ------------------ monatliche tabelle --------------------
